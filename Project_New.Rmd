@@ -1,0 +1,485 @@
+---
+title: "Project_New"
+author: "Krishna Patel"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### STEP 1 : IMPORT AND LOADING THE DATASET
+
+```{r}
+# Load the required libraries
+library(readr)
+library(dplyr)
+library(lubridate)
+library(ROSE)
+
+# Read data from CSV file
+df <- read.csv("C:/Users/KRISHNA/Downloads/New York City TLC Data.csv", header = TRUE)
+# Print some data from the dataset
+head(df)
+# Print the summary of dataset
+summary(df)
+
+```
+### STEP 2 : ANALYZING THE TARGET VARIABLE
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Calculate mean Total Amount
+mean_total_amount <- mean(df$total_amount)
+
+# Enhanced Histogram of Total Amount with adjusted x-axis range
+ggplot(df, aes(x = total_amount)) + 
+  geom_histogram(aes(fill = ..count..), bins = 30, color = "black") +
+  scale_fill_gradient("Count", low = "lightblue", high = "blue") +
+  geom_vline(aes(xintercept = mean_total_amount), color = "red", linetype = "dashed", size = 1) +
+  geom_text(aes(x = mean_total_amount, label = paste("Mean:", round(mean_total_amount, 2)), 
+                y = 30, vjust = 0), color = "red") +
+  labs(title = "Distribution of Total Amount", x = "Total Amount", y = "Frequency") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) +  # Center the title
+  xlim(0, 100)  # Adjust x-axis range
+```
+
+### STEP 3 : DATA CLEANING AND PREPROCESSING
+```{r}
+
+# Step 1: Handle Missing Values and remove duplicate rows
+# Check for missing values in the dataset
+missing_values <- colSums(is.na(df))
+
+# Print the sum of missing values for each column
+print(missing_values)
+
+# Check if there are any missing values
+if (any(missing_values > 0)) {
+  # If missing values exist, remove rows with missing values
+  df <- df[complete.cases(df), ]
+}
+
+# Remove duplicate rows
+df <- unique(df)
+
+# Step 2: Convert Data types
+# Convert date and time columns to datetime format
+df$tpep_pickup_datetime <- as.POSIXct(df$tpep_pickup_datetime, format = "%m/%d/%Y %I:%M:%S %p")
+df$tpep_dropoff_datetime <- as.POSIXct(df$tpep_dropoff_datetime, format = "%m/%d/%Y %I:%M:%S %p")
+
+# Convert VendorID, RatecodeID, PULocationID, DOLocationID, and payment_type to factors
+df$VendorID <- as.factor(df$VendorID)
+df$RatecodeID <- as.factor(df$RatecodeID)
+df$PULocationID <- as.factor(df$PULocationID)
+df$DOLocationID <- as.factor(df$DOLocationID)
+df$payment_type <- as.factor(df$payment_type)
+
+# Step 3: Deal with Outliers for the Target Variable (passenger_count)
+# Detect and deal with outliers using the IQR method
+
+# Define a function to detect and treat outliers using the IQR method
+treat_outliers <- function(x) {
+  Q1 <- quantile(x, 0.25)
+  Q3 <- quantile(x, 0.75)
+  IQR_val <- Q3 - Q1
+  upper_limit <- Q3 + 1.5 * IQR_val
+  x <- ifelse(x > upper_limit, upper_limit, x)
+  return(x)
+}
+
+# Apply the function to relevant numeric variables
+df$passenger_count <- treat_outliers(df$passenger_count)
+df$trip_distance <- treat_outliers(df$trip_distance)
+df$fare_amount <- treat_outliers(df$fare_amount)
+df$tip_amount <- treat_outliers(df$tip_amount)
+df$total_amount <- treat_outliers(df$total_amount)
+
+# Step 4: Feature Engineering
+# Extract additional information from datetime variables
+df <- df %>%
+  mutate(pickup_day = weekdays(tpep_pickup_datetime),
+         pickup_hour = hour(tpep_pickup_datetime),
+         dropoff_day = weekdays(tpep_dropoff_datetime),
+         dropoff_hour = hour(tpep_dropoff_datetime))
+
+# Step 5: Encoding Categorical Variables
+# Use one-hot encoding for categorical variables with more than two levels
+# Example for VendorID
+df <- df %>%
+  mutate_at(vars(VendorID, RatecodeID, PULocationID, DOLocationID, payment_type), as.character) %>%
+  mutate_if(is.factor, as.numeric)
+
+# Step 6: Standardize Numerical Variables
+# Standardize the target variable 'total_amount'
+df$total_amount <- scale(df$total_amount)
+
+# Standardize other numeric variables
+df$trip_distance <- scale(df$trip_distance)
+df$fare_amount <- scale(df$fare_amount)
+df$tip_amount <- scale(df$tip_amount)
+
+# Step 7: Checking for Data Imbalance
+# Check the distribution of total_amount
+
+# The target variable 'total_amount' is a continuous variable
+
+# Check the actual sample size of the dataset
+actual_sample_size <- nrow(df)
+actual_sample_size
+
+# No need to perform oversampling, as the target variable is continuous
+
+colnames(df)
+head(df)
+
+```
+
+### STEP 4 : DATA VISUALIZATION
+```{r}
+
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# 1. Relationship between Total Amount and Other Numeric Variables
+ggplot(df, aes(x = trip_distance, y = total_amount)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Relationship between Total Amount and Trip Distance",
+       x = "Trip Distance", y = "Total Amount")
+
+ggplot(df, aes(x = fare_amount, y = total_amount)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Relationship between Total Amount and Fare Amount",
+       x = "Fare Amount", y = "Total Amount")
+
+ggplot(df, aes(x = tip_amount, y = total_amount)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Relationship between Total Amount and Tip Amount",
+       x = "Tip Amount", y = "Total Amount")
+
+
+# 2. Total Amount by Categorical Variables
+
+ggplot(df, aes(x = as.factor(VendorID), y = total_amount)) +
+  geom_boxplot() +
+  labs(title = "Total Amount by Vendor ID",
+       x = "Vendor ID", y = "Total Amount")
+
+ggplot(df, aes(x = as.factor(RatecodeID), y = total_amount)) +
+  geom_boxplot() +
+  labs(title = "Total Amount by RateCode ID",
+       x = "RateCode ID", y = "Total Amount")
+
+ggplot(df, aes(x = as.factor(payment_type), y = total_amount)) +
+  geom_boxplot() +
+  labs(title = "Total Amount by Payment Type",
+       x = "Payment Type", y = "Total Amount")
+
+ggplot(df, aes(x = pickup_day, y = total_amount)) +
+  geom_boxplot() +
+  labs(title = "Total Amount by Pickup Day",
+       x = "Pickup Day", y = "Total Amount")
+
+ggplot(df, aes(x = as.factor(pickup_hour), y = total_amount)) +
+  geom_boxplot() +
+  labs(title = "Total Amount by Pickup Hour",
+       x = "Pickup Hour", y = "Total Amount")
+
+
+
+# 3. Histograms for Numeric Variables
+ggplot(df, aes(x = passenger_count)) + 
+  geom_histogram(fill = "steelblue", color = "white") +
+  labs(title = "Distribution of Passenger Count", x = "Passenger Count", y = "Count")
+
+ggplot(df, aes(x = trip_distance)) +
+  geom_histogram(fill = "steelblue", color = "white") +
+  labs(title = "Distribution of Trip Distance", x = "Trip Distance", y = "Count")
+
+ggplot(df, aes(x = fare_amount)) +
+  geom_histogram(fill = "steelblue", color = "white") +
+  labs(title = "Distribution of Fare Amount", x = "Fare Amount", y = "Count")
+
+ggplot(df, aes(x = tip_amount)) +
+  geom_histogram(fill = "steelblue", color = "white") +
+  labs(title = "Distribution of Tip Amount", x = "Tip Amount", y = "Count")
+
+# 4. Scatter plot for Continuous vs. Continuous Variables
+ggplot(df, aes(x = trip_distance, y = total_amount)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Relationship between Trip Distance and Total Amount",
+       x = "Trip Distance", y = "Total Amount")
+
+
+# 5. Correlation Matrix
+numeric_df <- df[, sapply(df, is.numeric)]
+# Calculate the correlation matrix
+correlation_matrix <- cor(numeric_df)
+
+# Print the correlation matrix
+print(correlation_matrix)
+
+# Plot the correlation matrix
+library(corrplot)
+
+corrplot(correlation_matrix, method = "color", type="full", addCoef.col = "black", number.cex = 0.4, number.digits = 2, tl.col = "black",
+         col = colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))(200))
+
+```
+
+### STEP 5: FIT THE DIFFERENT MODELS
+## Linear Regression Model
+```{r}
+# Load the required libraries
+library(caret)  # For data splitting and cross-validation
+library(glmnet) # For ridge and lasso regression
+library(rpart)  # For decision tree regression
+
+# Read the dataset from a CSV file
+df <- read.csv("C:/Users/KRISHNA/Downloads/New York City TLC Data.csv", header = TRUE)
+
+# Display the first few rows and structure of the dataset
+head(df)
+str(df)
+
+# Check if 'total_amount' variable exists in the dataset
+if (!"total_amount" %in% colnames(df)) {
+  stop("The 'total_amount' variable does not exist in the dataset.")
+}
+
+# Define the formula for the linear regression model
+formula <- as.formula("total_amount ~ trip_distance + PULocationID + DOLocationID + fare_amount + extra + mta_tax + tip_amount + tolls_amount + improvement_surcharge")
+
+# Fit a simple linear regression model to predict 'total_amount'
+fit_simple <- lm(formula, data = df)
+
+# Display summary statistics of the linear regression model
+summary(fit_simple)
+
+# Define the number of folds for cross-validation
+k <- 10 # Number of folds for K-fold Cross-Validation
+
+# Split data into training and testing sets (80% train, 20% test)
+set.seed(123) # for reproducibility
+train_index <- createDataPartition(df$total_amount, p = 0.8, list = FALSE)
+train_data <- df[train_index, ]
+test_data <- df[-train_index, ]
+
+# Train the model
+lm_model <- lm(formula, data = train_data)
+
+# Make predictions
+lm_predictions <- predict(lm_model, newdata = test_data)
+
+# Calculate RMSE
+lm_rmse <- sqrt(mean((lm_predictions - test_data$total_amount)^2))
+
+# Coefficient of Determination (R-squared)
+r_squared <- summary(lm_model)$r.squared
+cat("R-squared:", r_squared, "\n")
+
+# Residual Analysis
+residuals <- resid(lm_model)
+plot(residuals, main = "Residual Analysis")
+
+# Perform k-fold Cross-Validation
+cv_results <- cv.glm(train_data, lm_model, K = k)
+
+# Extract the root mean squared error (RMSE) for each fold
+cv_rmse <- sqrt(cv_results$delta)
+
+# Average RMSE across all folds
+avg_rmse <- mean(cv_rmse)
+
+# Print the results
+cat("Average RMSE for K-fold Cross-Validation:", avg_rmse, "\n")
+
+# Information Criteria (BIC)
+bic <- BIC(lm_model)
+cat("BIC:", bic, "\n")
+
+
+```
+
+
+``
+
+
+## Ridge Regression
+```{r}
+# Load the glmnet package
+library(glmnet)
+
+# Train the Ridge Regression model
+ridge_model <- glmnet(x = as.matrix(train_data[, -which(names(train_data) == "total_amount")]), 
+                      y = train_data$total_amount, alpha = 0)
+
+# Make predictions
+ridge_predictions <- predict(ridge_model, s = 0.01, newx = as.matrix(test_data[, -which(names(test_data) == "total_amount")]))
+
+# Calculate RMSE
+ridge_rmse <- sqrt(mean((ridge_predictions - test_data$total_amount)^2))
+
+# Print RMSE
+cat("RMSE for Ridge Regression:", ridge_rmse, "\n")
+
+# Coefficient of Determination (R-squared)
+ridge_r_squared <- cor(ridge_predictions, test_data$total_amount)^2
+cat("R-squared for Ridge Regression:", ridge_r_squared, "\n")
+
+# Residual Analysis
+ridge_residuals <- ridge_predictions - test_data$total_amount
+plot(ridge_residuals, main = "Residual Analysis for Ridge Regression")
+
+# K-fold Cross-Validation
+ctrl <- trainControl(method = "cv", number = 10)
+ridge_cv_model <- train(total_amount ~ ., data = train_data, method = "glmnet", trControl = ctrl)
+
+# Calculate RMSE for K-fold Cross-Validation
+ridge_cv_rmse <- sqrt(mean((predict(ridge_cv_model, newdata = test_data) - test_data$total_amount)^2))
+cat("RMSE for K-fold Cross-Validation:", ridge_cv_rmse, "\n")
+
+# Information Criteria (BIC)
+ridge_bic <- log10(ridge_rmse^2) + log(nrow(train_data)) * (length(coef(ridge_model)) - 1)
+cat("BIC for Ridge Regression:", ridge_bic, "\n")
+
+
+```
+## LASSO MODEL
+```{r}
+# Train the model
+lasso_model <- glmnet(x = as.matrix(train_data[, -which(names(train_data) == "total_amount")]), 
+                      y = train_data$total_amount, alpha = 1)
+
+# Make predictions
+lasso_predictions <- predict(lasso_model, s = 0.01, newx = as.matrix(test_data[, -which(names(test_data) == "total_amount")]))
+
+# Calculate RMSE
+lasso_rmse <- sqrt(mean((lasso_predictions - test_data$total_amount)^2))
+
+# Print RMSE
+cat("RMSE for Lasso Regression:", lasso_rmse, "\n")
+
+# Coefficient of Determination (R-squared)
+lasso_r_squared <- cor(lasso_predictions, test_data$total_amount)^2
+cat("R-squared for Lasso Regression:", lasso_r_squared, "\n")
+
+# Residual Analysis
+lasso_residuals <- lasso_predictions - test_data$total_amount
+plot(lasso_residuals, main = "Residual Analysis for Lasso Regression")
+
+# K-fold Cross-Validation
+ctrl <- trainControl(method = "cv", number = 10)
+lasso_cv_model <- train(total_amount ~ ., data = train_data, method = "glmnet", trControl = ctrl)
+
+# Calculate RMSE for K-fold Cross-Validation
+lasso_cv_rmse <- sqrt(mean((predict(lasso_cv_model, newdata = test_data) - test_data$total_amount)^2))
+cat("RMSE for K-fold Cross-Validation:", lasso_cv_rmse, "\n")
+
+# Information Criteria (BIC)
+lasso_bic <- log10(lasso_rmse^2) + log(nrow(train_data)) * (length(coef(lasso_model)) - 1)
+cat("BIC for Lasso Regression:", lasso_bic, "\n")
+
+```
+
+## DECISION TREE
+```{r}
+#Load the required library
+library(rpart)
+# Train the model
+dt_model <- rpart(total_amount ~ ., data = train_data)
+
+# Make predictions
+dt_predictions <- predict(dt_model, test_data)
+
+# Calculate RMSE
+dt_rmse <- sqrt(mean((dt_predictions - test_data$total_amount)^2))
+
+# Print RMSE
+cat("RMSE for Decision Tree Regression:", dt_rmse, "\n")
+
+# Accuracy
+dt_accuracy <- mean((dt_predictions >= 0.5) == (test_data$total_amount >= 0.5))
+cat("Accuracy for Decision Tree Regression:", dt_accuracy, "\n")
+
+# Coefficient of Determination (R-squared)
+dt_r_squared <- cor(dt_predictions, test_data$total_amount)^2
+cat("R-squared for Decision Tree Regression:", dt_r_squared, "\n")
+
+# Residual Analysis
+dt_residuals <- dt_predictions - test_data$total_amount
+plot(dt_residuals, main = "Residual Analysis for Decision Tree Regression")
+
+# K-fold Cross-Validation
+ctrl <- trainControl(method = "cv", number = 10)
+dt_cv_model <- train(total_amount ~ ., data = train_data, method = "rpart", trControl = ctrl)
+# Calculate RMSE for K-fold Cross-Validation
+dt_cv_rmse <- sqrt(mean((predict(dt_cv_model, newdata = test_data) - test_data$total_amount)^2))
+cat("RMSE for K-fold Cross-Validation:", dt_cv_rmse, "\n")
+
+# Information Criteria (BIC) for Decision Tree Regression
+dt_bic <- log10(dt_rmse^2) + log(nrow(train_data)) * (length(dt_model$frame$var) - 1)
+cat("BIC for Decision Tree Regression:", dt_bic, "\n")
+
+
+```
+
+### STEP 6 : ANALYSIS AND RESULTS
+```{r}
+linear_regression_rmse <- 0.09381595
+linear_regression_r_squared <- 0.9905083
+linear_regression_bic <- 1263.052
+
+# Ridge Regression values
+ridge_regression_rmse <- 0.1365526
+ridge_regression_r_squared <- 0.9831332
+ridge_regression_rmse_cv <- 0.09379589
+ridge_regression_bic <- 21563.93
+# Lasso Regression values
+lasso_regression_rmse <- 0.09754365
+lasso_regression_r_squared <- 0.9904645
+lasso_regression_rmse_cv <- 0.09379589
+lasso_regression_bic <- 13364.96
+# Decision Tree Regression values
+decision_tree_rmse <- 0.2298347
+decision_tree_accuracy <- 0.960996
+decision_tree_r_squared <- 0.9464634
+decision_tree_rmse_cv <- 0.4000142
+decision_tree_bic <- 96.79315
+
+best_model <- "Multiple Linear Regression"
+
+if (linear_regression_r_squared < lasso_regression_r_squared) {
+  best_model <- "Lasso Regression"
+}
+
+if (lasso_regression_r_squared < ridge_regression_r_squared) {
+  best_model <- "Ridge Regression"
+}
+
+if (ridge_regression_r_squared < decision_tree_r_squared) {
+  best_model <- "Decision Tree Regression"
+}
+cat("Best Model is:",best_model)
+```
+
+
+
+
+
+
+
+
+
+
