@@ -22,4 +22,11 @@ Predictive-Analysis-of-Total-Amount-in-NYC-Taxi-Trips/
 <h2>⚠️ Limitations</h2> <ul> <li>Limited to historical data</li> <li>No real-time prediction</li> <li>External factors like traffic not included</li> </ul>
 <h2>🔮 Future Work</h2> <ul> <li>Add real-time prediction system</li> <li>Integrate external data (weather, traffic)</li> <li>Use advanced ML models</li> <li>Deploy as web dashboard</li> </ul>
 <h2>💡 Why This Project Matters</h2> <p> This project demonstrates practical data analytics and machine learning skills using real-world data. It highlights the ability to clean, analyze, and model large datasets to generate meaningful insights. </p>
-<h2>👤 Authors</h2> <ul> <li>Krishna Patel</li> <li>Prachi Engineer</li> <li>Janvi Patel</li> </ul>
+<h2>👤 Author</h2>
+<p>
+  Krishna Nikunjkumar Patel
+</p>
+
+<div align="center">
+  <h3>If you found this project useful, consider giving it a star.</h3>
+</div>
