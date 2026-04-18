@@ -11,10 +11,15 @@
 <h2>📊 Results and Comparison</h2> <table> <tr><th>Model</th><th>RMSE</th><th>R²</th></tr> <tr><td>Linear Regression</td><td>0.0938</td><td>0.9905</td></tr> <tr><td>Ridge Regression</td><td>0.1365</td><td>0.9831</td></tr> <tr><td>Lasso Regression</td><td>0.0975</td><td>0.9904</td></tr> <tr><td>Decision Tree</td><td>0.2298</td><td>0.9464</td></tr> </table> <p> Linear Regression performed best with highest accuracy and lowest error :contentReference[oaicite:3]{index=3}. </p>
 <h2>🧰 Tech Stack</h2> <table> <tr><th>Category</th><th>Tools</th></tr> <tr><td>Language</td><td>R</td></tr> <tr><td>Data Processing</td><td>dplyr, tidyverse</td></tr> <tr><td>Visualization</td><td>ggplot2</td></tr> <tr><td>Machine Learning</td><td>caret</td></tr> </table>
 <h2>📁 Project Structure</h2>
-Predictive-Analysis-of-Total-Amount-in-NYC-Taxi-Trips/
+<pre>
+  <code>
+    Predictive-Analysis-of-Total-Amount-in-NYC-Taxi-Trips/
 ├── Project_New.Rmd        # Main analysis pipeline
 ├── nyc.csv                # Dataset
 ├── README.md              # Documentation
+  </code>
+</pre>
+
 <h2>🛠️ Installation</h2> <pre> Install R and RStudio Install required packages: install.packages(c("ggplot2", "dplyr", "caret", "tidyverse")) </pre>
 <h2>▶️ Usage</h2> <pre> Open Project_New.Rmd in RStudio Run all chunks or click "Knit" to generate output </pre>
 <h2>📊 Key Insights</h2> <ul> <li>Trip distance is the strongest predictor of fare</li> <li>Linear regression performs best for this dataset</li> <li>Outlier removal improves prediction accuracy</li> <li>Feature engineering enhances model performance</li> </ul>
