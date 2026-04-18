@@ -1,17 +1,25 @@
-# Predictive-Analysis-of-Total-Amount-in-New-York-City-Taxi-and-Limousine-Trips
-
-Our analysis uses a Kaggle dataset from the New York City Taxi and Limousine Commission (TLC), detailing daily trip records, including passenger counts, trip distances, payment types, and fares. Using regression models like decision tree, ridge, lasso, and linear regression, we aim to predict total fares and analyze factors influencing pricing. The research provides insights to optimize pricing strategies, improve service quality, and enhance customer satisfaction in the taxi and limousine industry.
-
-Prediction Model Used:
-1. Linear Regression model
-2. Ridge Regression
-3. Lasso Regression
-4. Decision regression tree
-
-Results:
-1. Root Mean Square Error (RMSE)
-2. R – Square (Coefficient of Determination)
-3. k-fold Cross Validation
-
-Conclusion:
-Our research utilized a dataset from the New York City Taxi and Limousine Commission (TLC), containing information from over 200,000 license holders and nearly a million daily rides. After cleaning and visualizing the data, we applied regression models, including Multiple Linear Regression, Ridge, Lasso, and Decision Trees, to predict total fare amounts. Visualization revealed a right-skewed fare distribution, with most trips having lower fares. Among the models, Multiple Linear Regression performed the best, with the lowest RMSE (0.0938) and highest R-squared (0.9905), demonstrating superior accuracy and interpretability. This model offers valuable insights for optimizing pricing strategies, enhancing service quality, and improving customer satisfaction in the transportation industry.
+<div align="center"> <h1>🚖 Predictive Analysis of Total Amount in NYC Taxi Trips</h1> <p> Data analytics project focused on predicting taxi trip fares using regression models on NYC Taxi dataset. </p> <p> <a href="https://www.r-project.org/"> <img src="https://img.shields.io/badge/R-Programming-blue" /> </a> <a href="https://www.tidyverse.org/"> <img src="https://img.shields.io/badge/Tidyverse-Data%20Wrangling-orange" /> </a> <a href="https://ggplot2.tidyverse.org/"> <img src="https://img.shields.io/badge/ggplot2-Visualization-green" /> </a> <a href="https://topepo.github.io/caret/"> <img src="https://img.shields.io/badge/Caret-ML-red" /> </a> </p> </div>
+<h2>📌 Overview</h2> <p> This project analyzes New York City taxi trip data to predict the total fare amount using machine learning models. The dataset is sourced from the NYC Taxi and Limousine Commission (TLC), containing detailed trip-level information. </p> <p> The objective is to identify key factors influencing trip cost and build predictive models that estimate fares accurately. </p>
+<h2>🎯 Project Motivation</h2> <ul> <li>Understand factors influencing taxi pricing</li> <li>Apply regression models on real-world data</li> <li>Improve prediction accuracy through feature engineering</li> <li>Gain insights into urban transportation patterns</li> </ul>
+<h2>🚀 Key Features</h2> <ul> <li>End-to-end data analysis pipeline</li> <li>Data cleaning and preprocessing</li> <li>Exploratory data visualization</li> <li>Feature engineering</li> <li>Multiple regression models</li> <li>Model comparison using statistical metrics</li> </ul>
+<h2>📊 Dataset</h2> <p> The dataset is obtained from NYC Taxi and Limousine Commission (TLC). It contains thousands of trip records with features such as: </p> <ul> <li>Trip distance</li> <li>Pickup and drop-off timestamps</li> <li>Passenger count</li> <li>Fare amount</li> <li>Tip amount</li> <li><b>Total amount (target variable)</b></li> </ul> <p> The project focuses on predicting <b>total_amount</b> using these features :contentReference[oaicite:0]{index=0}. </p>
+<h2>🧹 Data Cleaning and Preprocessing</h2> <ul> <li>Handled missing values and removed duplicates</li> <li>Converted data types for consistency</li> <li>Detected and removed outliers</li> <li>Encoded categorical variables</li> <li>Standardized numerical features</li> </ul> <p> The preprocessing pipeline ensures clean and reliable data for modeling :contentReference[oaicite:1]{index=1}. </p>
+<h2>📈 Data Visualization</h2> <ul> <li>Box plots for distribution analysis</li> <li>Histograms for feature distribution</li> <li>Scatter plots to identify relationships</li> </ul> <p> Key observations: </p> <ul> <li>Total amount increases with trip distance</li> <li>Fare amount strongly correlates with total amount</li> </ul>
+<h2>🧠 Feature Engineering</h2> <ul> <li>Extracted time-based features (hour, day)</li> <li>Created interaction variables</li> <li>Applied transformations on distance and fare</li> <li>Encoded categorical features</li> </ul> <p> Feature engineering improved model accuracy significantly :contentReference[oaicite:2]{index=2}. </p>
+<h2>🤖 Models Used</h2> <ul> <li>Multiple Linear Regression</li> <li>Ridge Regression</li> <li>Lasso Regression</li> <li>Decision Tree Regression</li> </ul>
+<h2>📏 Model Evaluation</h2> <ul> <li><b>RMSE</b> – prediction error</li> <li><b>R² Score</b> – variance explained</li> <li><b>BIC</b> – model complexity vs accuracy</li> <li><b>K-Fold Cross Validation</b> – model reliability</li> </ul>
+<h2>📊 Results and Comparison</h2> <table> <tr><th>Model</th><th>RMSE</th><th>R²</th></tr> <tr><td>Linear Regression</td><td>0.0938</td><td>0.9905</td></tr> <tr><td>Ridge Regression</td><td>0.1365</td><td>0.9831</td></tr> <tr><td>Lasso Regression</td><td>0.0975</td><td>0.9904</td></tr> <tr><td>Decision Tree</td><td>0.2298</td><td>0.9464</td></tr> </table> <p> Linear Regression performed best with highest accuracy and lowest error :contentReference[oaicite:3]{index=3}. </p>
+<h2>🧰 Tech Stack</h2> <table> <tr><th>Category</th><th>Tools</th></tr> <tr><td>Language</td><td>R</td></tr> <tr><td>Data Processing</td><td>dplyr, tidyverse</td></tr> <tr><td>Visualization</td><td>ggplot2</td></tr> <tr><td>Machine Learning</td><td>caret</td></tr> </table>
+<h2>📁 Project Structure</h2>
+Predictive-Analysis-of-Total-Amount-in-NYC-Taxi-Trips/
+├── Project_New.Rmd        # Main analysis pipeline
+├── nyc.csv                # Dataset
+├── README.md              # Documentation
+<h2>🛠️ Installation</h2> <pre> Install R and RStudio Install required packages: install.packages(c("ggplot2", "dplyr", "caret", "tidyverse")) </pre>
+<h2>▶️ Usage</h2> <pre> Open Project_New.Rmd in RStudio Run all chunks or click "Knit" to generate output </pre>
+<h2>📊 Key Insights</h2> <ul> <li>Trip distance is the strongest predictor of fare</li> <li>Linear regression performs best for this dataset</li> <li>Outlier removal improves prediction accuracy</li> <li>Feature engineering enhances model performance</li> </ul>
+<h2>📚 Key Learnings</h2> <ul> <li>Importance of data preprocessing</li> <li>Understanding regression models</li> <li>Evaluating models with multiple metrics</li> <li>Impact of feature engineering</li> </ul>
+<h2>⚠️ Limitations</h2> <ul> <li>Limited to historical data</li> <li>No real-time prediction</li> <li>External factors like traffic not included</li> </ul>
+<h2>🔮 Future Work</h2> <ul> <li>Add real-time prediction system</li> <li>Integrate external data (weather, traffic)</li> <li>Use advanced ML models</li> <li>Deploy as web dashboard</li> </ul>
+<h2>💡 Why This Project Matters</h2> <p> This project demonstrates practical data analytics and machine learning skills using real-world data. It highlights the ability to clean, analyze, and model large datasets to generate meaningful insights. </p>
+<h2>👤 Authors</h2> <ul> <li>Krishna Patel</li> <li>Prachi Engineer</li> <li>Janvi Patel</li> </ul>
