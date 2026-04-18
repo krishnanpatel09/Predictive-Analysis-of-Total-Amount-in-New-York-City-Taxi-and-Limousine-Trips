@@ -12,8 +12,7 @@
 <h2>🧰 Tech Stack</h2> <table> <tr><th>Category</th><th>Tools</th></tr> <tr><td>Language</td><td>R</td></tr> <tr><td>Data Processing</td><td>dplyr, tidyverse</td></tr> <tr><td>Visualization</td><td>ggplot2</td></tr> <tr><td>Machine Learning</td><td>caret</td></tr> </table>
 <h2>📁 Project Structure</h2>
 <pre>
-  <code>
-    Predictive-Analysis-of-Total-Amount-in-NYC-Taxi-Trips/
+  <code>Predictive-Analysis-of-Total-Amount-in-NYC-Taxi-Trips/
 ├── Project_New.Rmd        # Main analysis pipeline
 ├── nyc.csv                # Dataset
 ├── README.md              # Documentation
